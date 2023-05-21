@@ -11,65 +11,38 @@
     <p>{{ reversedPhrase }}</p>
 
     <app-alert :user="user" />
+    <button type="button" ref="btn">Button</button>
   </div>
 </template>
 
-<script>
-import {
-  ref,
-  reactive,
-  toRefs,
-  watchEffect,
-  watch,
-  computed,
-  onBeforeMount,
-  onMounted,
-} from "vue";
+<script setup>
+import { ref, reactive, toRefs, onBeforeMount, onMounted } from "vue";
 import AppAlert from "@/components/Alert.vue";
-export default {
-  name: "App",
-  components: {
-    AppAlert,
-  },
-  setup() {
-    onBeforeMount(() => {
-      console.log("onBeforeMount()");
-    });
-    onMounted(() => {
-      console.log("onMounted()");
-    });
-    let num = ref(0);
-    // console.log(num);
-    function increment() {
-      num.value++;
-    }
-    const double = computed(() => {
-      return num.value * 2;
-    });
-    const user = reactive({
-      name: "Luis",
-      age: 20,
-    });
-    setTimeout(() => {
-      user.name = "Joe";
-    }, 3000);
+import { useNumber } from "@/hooks/number";
+import { usePhrase } from "@/hooks/phrase";
 
-    const phrase = ref("");
-    const reversedPhrase = ref("");
+const btn = ref(null);
+onBeforeMount(() => {
+  console.log("onBeforeMount()");
+});
+onMounted(() => {
+  console.log("onMounted()");
 
-    watchEffect(() => {
-      reversedPhrase.value = phrase.value.split("").reverse().join("");
-    });
+  btn.value.addEventListener("click", () => {
+    console.log("button was clicked!");
+  });
+});
 
-    return {
-      num,
-      increment,
-      ...toRefs(user),
-      phrase,
-      reversedPhrase,
-      double,
-      user,
-    };
-  },
-};
+const user = reactive({
+  name: "Luis",
+  age: 20,
+});
+setTimeout(() => {
+  user.name = "Joe";
+}, 3000);
+
+const { num, increment, double } = useNumber();
+const { phrase, reversedPhrase, num: phraseNum } = usePhrase();
+
+const { name } = toRefs(user);
 </script>
